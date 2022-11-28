@@ -17,8 +17,8 @@ public abstract class AbstractBeanFactory extends DefaultSingletonBeanRegistry i
         if (bean != null) {
             return bean;
         }
+        // 获取和创建bean细节方式的交给下游
         BeanDefinition beanDefinition = getBeanDefinition(name);
-        // 创建bean细节方式的交给下游
         return createBean(name, beanDefinition);
     }
 
