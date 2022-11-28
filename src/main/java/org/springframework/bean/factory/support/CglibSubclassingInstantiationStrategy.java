@@ -23,5 +23,5 @@ public class CglibSubclassingInstantiationStrategy implements InstantiationStrat
         enhancer.setSuperclass(beanDefinition.getBeanClass());
         enhancer.setCallback((MethodInterceptor) (obj, method, argsTemp, proxy) -> proxy.invokeSuper(obj, argsTemp));
         return enhancer.create();
-    }
+     }
 }

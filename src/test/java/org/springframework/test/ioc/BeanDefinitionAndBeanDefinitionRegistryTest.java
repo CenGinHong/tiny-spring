@@ -3,6 +3,7 @@ package org.springframework.test.ioc;
 import org.junit.Test;
 import org.springframework.bean.factory.config.BeanDefinition;
 import org.springframework.bean.factory.support.DefaultListableBeanFactory;
+import org.springframework.test.ioc.service.HelloService;
 
 /**
  * @author chenJianhang

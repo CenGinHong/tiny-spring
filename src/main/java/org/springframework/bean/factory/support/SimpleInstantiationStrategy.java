@@ -4,7 +4,6 @@ import org.springframework.bean.BeansException;
 import org.springframework.bean.factory.config.BeanDefinition;
 
 import java.lang.reflect.Constructor;
-import java.lang.reflect.InvocationTargetException;
 
 /**
  * @author chenJianhang
@@ -26,7 +25,7 @@ public class SimpleInstantiationStrategy implements InstantiationStrategy {
             Constructor<?> constructor = beanClass.getDeclaredConstructor();
             return constructor.newInstance();
         } catch (Exception e) {
-            throw new BeansException(String.format("Failed to instantiate [%s]", beanClass.getName()), e);
+            throw new BeansException("Failed to instantiate [" + beanClass.getName() + "]", e);
         }
     }
 }
