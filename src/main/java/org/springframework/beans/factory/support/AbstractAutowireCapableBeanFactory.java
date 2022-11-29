@@ -1,10 +1,10 @@
-package org.springframework.bean.factory.support;
+package org.springframework.beans.factory.support;
 
 import cn.hutool.core.bean.BeanUtil;
-import org.springframework.bean.BeansException;
-import org.springframework.bean.factory.PropertyValue;
-import org.springframework.bean.factory.config.BeanDefinition;
-import org.springframework.bean.factory.config.BeanReference;
+import org.springframework.beans.BeansException;
+import org.springframework.beans.factory.PropertyValue;
+import org.springframework.beans.factory.config.BeanDefinition;
+import org.springframework.beans.factory.config.BeanReference;
 
 /**
  * @author chenJianhang

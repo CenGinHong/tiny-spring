@@ -1,11 +1,11 @@
 package org.springframework.test.ioc;
 
 import org.junit.Test;
-import org.springframework.bean.factory.PropertyValue;
-import org.springframework.bean.factory.PropertyValues;
-import org.springframework.bean.factory.config.BeanDefinition;
-import org.springframework.bean.factory.config.BeanReference;
-import org.springframework.bean.factory.support.DefaultListableBeanFactory;
+import org.springframework.beans.factory.PropertyValue;
+import org.springframework.beans.factory.PropertyValues;
+import org.springframework.beans.factory.config.BeanDefinition;
+import org.springframework.beans.factory.config.BeanReference;
+import org.springframework.beans.factory.support.DefaultListableBeanFactory;
 import org.springframework.test.ioc.bean.Car;
 import org.springframework.test.ioc.bean.Person;
 

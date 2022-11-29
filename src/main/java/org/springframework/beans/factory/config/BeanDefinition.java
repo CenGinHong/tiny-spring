@@ -1,6 +1,6 @@
-package org.springframework.bean.factory.config;
+package org.springframework.beans.factory.config;
 
-import org.springframework.bean.factory.PropertyValues;
+import org.springframework.beans.factory.PropertyValues;
 
 /**
  * 用于定义bean信息的类，包含bean的class类型、构造参数、属性值等信息
@@ -16,7 +16,7 @@ public class BeanDefinition {
     private PropertyValues propertyValues;
 
     public BeanDefinition(Class<?> beanClass) {
-        this(beanClass,null);
+        this(beanClass, null);
     }
 
     public BeanDefinition(Class<?> beanClass, PropertyValues propertyValues) {

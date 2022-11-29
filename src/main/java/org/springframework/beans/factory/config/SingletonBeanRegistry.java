@@ -1,4 +1,4 @@
-package org.springframework.bean.factory.config;
+package org.springframework.beans.factory.config;
 
 /**
  * 单例注册表,定义注册BeanDefinition的方法

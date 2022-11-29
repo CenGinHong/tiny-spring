@@ -1,7 +1,7 @@
-package org.springframework.bean.factory.support;
+package org.springframework.beans.factory.support;
 
-import org.springframework.bean.BeansException;
-import org.springframework.bean.factory.config.BeanDefinition;
+import org.springframework.beans.BeansException;
+import org.springframework.beans.factory.config.BeanDefinition;
 
 /**
  * Bean的实例化策略

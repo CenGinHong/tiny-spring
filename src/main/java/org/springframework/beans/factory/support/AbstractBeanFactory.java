@@ -1,8 +1,8 @@
-package org.springframework.bean.factory.support;
+package org.springframework.beans.factory.support;
 
-import org.springframework.bean.BeansException;
-import org.springframework.bean.factory.BeanFactory;
-import org.springframework.bean.factory.config.BeanDefinition;
+import org.springframework.beans.BeansException;
+import org.springframework.beans.factory.BeanFactory;
+import org.springframework.beans.factory.config.BeanDefinition;
 
 /**
  * @author chenJianhang
@@ -20,6 +20,14 @@ public abstract class AbstractBeanFactory extends DefaultSingletonBeanRegistry i
         // 获取和创建bean细节方式的交给下游
         BeanDefinition beanDefinition = getBeanDefinition(name);
         return createBean(name, beanDefinition);
+    }
+
+
+    @SuppressWarnings("unchecked")
+    @Override
+    public <T> T getBean(String name, Class<T> requireType) {
+        // 这里强转？不和类型呢
+        return ((T) getBean(name));
     }
 
     protected abstract Object createBean(String beanName, BeanDefinition beanDefinition) throws BeansException;

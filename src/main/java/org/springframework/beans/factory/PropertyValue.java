@@ -1,4 +1,4 @@
-package org.springframework.bean.factory;
+package org.springframework.beans.factory;
 
 /**
  * @author chenJianhang

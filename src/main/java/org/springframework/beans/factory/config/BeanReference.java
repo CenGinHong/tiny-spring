@@ -1,4 +1,4 @@
-package org.springframework.bean.factory.config;
+package org.springframework.beans.factory.config;
 
 /**
  * 包装bean对象，如果一个bean对象引用i另一个bean对象是用此包装
