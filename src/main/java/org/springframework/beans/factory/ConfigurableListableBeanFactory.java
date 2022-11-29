@@ -3,6 +3,7 @@ package org.springframework.beans.factory;
 import org.springframework.beans.BeansException;
 import org.springframework.beans.factory.config.AutowireCapableBeanFactory;
 import org.springframework.beans.factory.config.BeanDefinition;
+import org.springframework.beans.factory.config.BeanPostProcessor;
 
 /**
  * @author chenJianhang
@@ -18,5 +19,14 @@ public interface ConfigurableListableBeanFactory extends ListableBeanFactory, Au
      * @throws BeansException BeansException 找不到时抛出
      */
     BeanDefinition getBeanDefinition(String beanName) throws BeansException;
+
+    void addBeanPostProcessor(BeanPostProcessor beanPostProcessor);
+
+    /**
+     * 提前实例化所有单例实例
+     *
+     * @throws BeansException BeansException
+     */
+    void preInstantiateSingletons() throws BeansException;
 
 }

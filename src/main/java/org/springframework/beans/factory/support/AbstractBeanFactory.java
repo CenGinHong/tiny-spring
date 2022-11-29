@@ -2,13 +2,21 @@ package org.springframework.beans.factory.support;
 
 import org.springframework.beans.BeansException;
 import org.springframework.beans.factory.BeanFactory;
+import org.springframework.beans.factory.ConfigurableListableBeanFactory;
 import org.springframework.beans.factory.config.BeanDefinition;
+import org.springframework.beans.factory.config.BeanPostProcessor;
+import org.springframework.beans.factory.config.ConfigurableBeanFactory;
+
+import java.util.ArrayList;
+import java.util.List;
 
 /**
  * @author chenJianhang
  * @version 1.0 2022/11/27 21:31
  */
-public abstract class AbstractBeanFactory extends DefaultSingletonBeanRegistry implements BeanFactory {
+public abstract class AbstractBeanFactory extends DefaultSingletonBeanRegistry implements ConfigurableBeanFactory {
+
+    private final List<BeanPostProcessor> beanPostProcessorList = new ArrayList<>();
 
     @Override
     public Object getBean(String name) {
@@ -33,5 +41,16 @@ public abstract class AbstractBeanFactory extends DefaultSingletonBeanRegistry i
     protected abstract Object createBean(String beanName, BeanDefinition beanDefinition) throws BeansException;
 
     protected abstract BeanDefinition getBeanDefinition(String beanName) throws BeansException;
+
+    @Override
+    public void addBeanPostProcessor(BeanPostProcessor beanPostProcessor) {
+        // 有则模式
+        this.beanPostProcessorList.remove(beanPostProcessor);
+        this.beanPostProcessorList.add(beanPostProcessor);
+    }
+
+    public List<BeanPostProcessor> getBeanPostProcessorList() {
+        return beanPostProcessorList;
+    }
 
 }
