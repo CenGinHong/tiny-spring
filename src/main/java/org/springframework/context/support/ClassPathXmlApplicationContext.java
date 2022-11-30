@@ -1,7 +1,5 @@
 package org.springframework.context.support;
 
-import org.springframework.beans.factory.support.DefaultListableBeanFactory;
-
 /**
  * @author chenJianhang
  * @version 1.0 2022/11/29 21:38
@@ -33,4 +31,5 @@ public class ClassPathXmlApplicationContext extends AbstractXmlApplicationContex
     protected String[] getConfigLocations() {
         return this.configLocations;
     }
+
 }

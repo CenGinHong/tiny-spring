@@ -34,7 +34,6 @@ public class PopulateBeanWithPropertyValuesTest {
 
     /**
      * 为bean注入bean
-     *
      */
     @Test
     public void testPopulateBeanWithBean() {

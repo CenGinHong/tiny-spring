@@ -13,7 +13,7 @@ import java.util.Map;
 public interface ListableBeanFactory extends BeanFactory {
 
     /**
-     * 返回所有指定类型的实例
+     * 返回所有指定类型的实例，如果没有创建先创建
      *
      * @param type type
      * @param <T>  T

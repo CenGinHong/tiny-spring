@@ -30,6 +30,8 @@ public class XmlBeanDefinitionReader extends AbstractAutowireDefinitionReader {
     public static final String CLASS_ATTRIBUTE = "class";
     public static final String VALUE_ATTRIBUTE = "value";
     public static final String REF_ATTRIBUTE = "ref";
+    public static final String INIT_METHOD_ATTRIBUTE = "init-method";
+    public static final String DESTROY_METHOD_ATTRIBUTE = "destroy-method";
 
     public XmlBeanDefinitionReader(BeanDefinitionRegistry registry) {
         super(registry);
@@ -66,6 +68,8 @@ public class XmlBeanDefinitionReader extends AbstractAutowireDefinitionReader {
                     String idAttr = bean.getAttribute(ID_ATTRIBUTE);
                     String beanNameAttr = bean.getAttribute(NAME_ATTRIBUTE);
                     String classNameAttr = bean.getAttribute(CLASS_ATTRIBUTE);
+                    String initMethodNameAttr = bean.getAttribute(INIT_METHOD_ATTRIBUTE);
+                    String destroyMethodNameAttr = bean.getAttribute(DESTROY_METHOD_ATTRIBUTE);
                     Class<?> clazz;
                     try {
                         clazz = Class.forName(classNameAttr);
@@ -84,6 +88,8 @@ public class XmlBeanDefinitionReader extends AbstractAutowireDefinitionReader {
                     }
 
                     BeanDefinition beanDefinition = new BeanDefinition(clazz);
+                    beanDefinition.setInitMethodName(initMethodNameAttr);
+                    beanDefinition.setDestroyMethodName(destroyMethodNameAttr);
 
                     // 读取对应的property
                     for (int j = 0; j < bean.getChildNodes().getLength(); j++) {
@@ -94,8 +100,8 @@ public class XmlBeanDefinitionReader extends AbstractAutowireDefinitionReader {
                                 String propNameAttr = property.getAttribute(NAME_ATTRIBUTE);
                                 String propValueAttr = property.getAttribute(VALUE_ATTRIBUTE);
                                 String propRefAttr = property.getAttribute(REF_ATTRIBUTE);
-                                if(StrUtil.isEmpty(propNameAttr)) {
-                                    throw new BeansException("The name attribute of property of [" + beanName+ "] cannot be null or empty");
+                                if (StrUtil.isEmpty(propNameAttr)) {
+                                    throw new BeansException("The name attribute of property of [" + beanName + "] cannot be null or empty");
                                 }
                                 Object value = propValueAttr;
                                 // 引用其他的bean，先置入beanRef
@@ -109,7 +115,7 @@ public class XmlBeanDefinitionReader extends AbstractAutowireDefinitionReader {
                         }
                     }
                     // 注册beanDef
-                    getRegistry().registerBeanDefinition(beanName,beanDefinition);
+                    getRegistry().registerBeanDefinition(beanName, beanDefinition);
                 }
             }
         }

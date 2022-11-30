@@ -1,8 +1,6 @@
 package org.springframework.beans.factory.support;
 
 import org.springframework.beans.BeansException;
-import org.springframework.beans.factory.BeanFactory;
-import org.springframework.beans.factory.ConfigurableListableBeanFactory;
 import org.springframework.beans.factory.config.BeanDefinition;
 import org.springframework.beans.factory.config.BeanPostProcessor;
 import org.springframework.beans.factory.config.ConfigurableBeanFactory;
@@ -11,6 +9,9 @@ import java.util.ArrayList;
 import java.util.List;
 
 /**
+ * 存储了beanPostProcessorList，同时拥有DefaultSingletonBeanRegistry存储bean的能力
+ * 实现了getBean方法
+ *
  * @author chenJianhang
  * @version 1.0 2022/11/27 21:31
  */

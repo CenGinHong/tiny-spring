@@ -1,6 +1,8 @@
 package org.springframework.beans.factory;
 
 /**
+ * 规定有获取bean的能力
+ *
  * @author chenJianhang
  * @version 1.0 2022/11/27 21:10
  */

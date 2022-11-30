@@ -8,6 +8,8 @@ import java.util.HashMap;
 import java.util.Map;
 
 /**
+ * 该接口存储beanDef map
+ *
  * @author chenJianhang
  * @version 1.0 2022/11/27 21:57
  */
