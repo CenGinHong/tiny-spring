@@ -32,6 +32,7 @@ public class XmlBeanDefinitionReader extends AbstractAutowireDefinitionReader {
     public static final String REF_ATTRIBUTE = "ref";
     public static final String INIT_METHOD_ATTRIBUTE = "init-method";
     public static final String DESTROY_METHOD_ATTRIBUTE = "destroy-method";
+    public static final String SCOPE_ATTRIBUTE = "scope";
 
     public XmlBeanDefinitionReader(BeanDefinitionRegistry registry) {
         super(registry);
@@ -68,6 +69,7 @@ public class XmlBeanDefinitionReader extends AbstractAutowireDefinitionReader {
             String classNameAttr = bean.attributeValue(CLASS_ATTRIBUTE);
             String initMethodNameAttr = bean.attributeValue(INIT_METHOD_ATTRIBUTE);
             String destroyMethodNameAttr = bean.attributeValue(DESTROY_METHOD_ATTRIBUTE);
+            String beanScopeAttr = bean.attributeValue(SCOPE_ATTRIBUTE);
             Class<?> clazz;
             try {
                 clazz = Class.forName(classNameAttr);
@@ -88,6 +90,9 @@ public class XmlBeanDefinitionReader extends AbstractAutowireDefinitionReader {
             BeanDefinition beanDefinition = new BeanDefinition(clazz);
             beanDefinition.setInitMethodName(initMethodNameAttr);
             beanDefinition.setDestroyMethodName(destroyMethodNameAttr);
+            if (StrUtil.isNotEmpty(beanScopeAttr)) {
+                beanDefinition.setScope(beanScopeAttr);
+            }
             List<Element> propertyList = bean.elements(PROPERTY_ELEMENT);
             for (Element property : propertyList) {
                 // 解析property标签
