@@ -9,7 +9,7 @@ import org.springframework.beans.factory.Aware;
  * @author chenJianhang
  * @version 1.0 2022/12/2 16:53
  */
-public interface ApplicationContextAware  extends Aware {
+public interface ApplicationContextAware extends Aware {
 
     void setApplicationContext(ApplicationContext applicationContext) throws BeansException;
 
