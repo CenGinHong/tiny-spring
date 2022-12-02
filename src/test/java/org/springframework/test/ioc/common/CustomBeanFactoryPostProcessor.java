@@ -6,7 +6,6 @@ import org.springframework.beans.factory.PropertyValue;
 import org.springframework.beans.factory.PropertyValues;
 import org.springframework.beans.factory.config.BeanDefinition;
 import org.springframework.beans.factory.config.BeanFactoryPostProcessor;
-import org.springframework.test.ioc.bean.Car;
 
 /**
  * @author chenJianhang
