@@ -6,6 +6,7 @@ import org.springframework.beans.factory.PropertyValue;
 import org.springframework.beans.factory.PropertyValues;
 import org.springframework.beans.factory.config.BeanDefinition;
 import org.springframework.beans.factory.config.BeanFactoryPostProcessor;
+import org.springframework.test.ioc.bean.Car;
 
 /**
  * @author chenJianhang
@@ -15,8 +16,9 @@ public class CustomBeanFactoryPostProcessor implements BeanFactoryPostProcessor 
 
     @Override
     public void postProcessBeanFactory(ConfigurableListableBeanFactory beanFactory) throws BeansException {
-        BeanDefinition personBeanDefinition = beanFactory.getBeanDefinition("person");
-        PropertyValues propertyValues = personBeanDefinition.getPropertyValues();
+        System.out.println("CustomBeanFactoryPostProcessor#postProcessBeanFactory");
+        BeanDefinition personBeanDefiniton = beanFactory.getBeanDefinition("person");
+        PropertyValues propertyValues = personBeanDefiniton.getPropertyValues();
         //将person的name属性改为ivy
         propertyValues.addPropertyValue(new PropertyValue("name", "ivy"));
     }

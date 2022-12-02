@@ -20,4 +20,5 @@ public abstract class AbstractXmlApplicationContext extends AbstractRefreshableA
     }
 
     protected abstract String[] getConfigLocations();
+
 }
