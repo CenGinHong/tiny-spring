@@ -3,6 +3,8 @@ package org.springframework.beans.factory.support;
 import org.springframework.beans.factory.config.BeanDefinition;
 
 /**
+ * 主要是为了DefaultListableBeanFactory中的beanDef存取方法做铺垫
+ *
  * @author chenJianhang
  * @version 1.0 2022/11/27 21:56
  */

@@ -12,6 +12,7 @@ import java.util.List;
 import java.util.Map;
 
 /**
+ * 继承了实现了 SingletonBeanRegistry 的DefaultSingletonBeanRegistry 类，具备了单例 Bean 的注册功能。
  * 存储了beanPostProcessorList，同时拥有DefaultSingletonBeanRegistry存储bean的能力
  * 实现了getBean方法
  *
@@ -31,6 +32,7 @@ public abstract class AbstractBeanFactory extends DefaultSingletonBeanRegistry i
         if (sharedInstance == null) {
             // 获取和创建bean细节方式的交给下游
             BeanDefinition beanDefinition = getBeanDefinition(name);
+            // 由实现此抽象类的其他类做相应实现
             sharedInstance = createBean(name, beanDefinition);
 
         }
