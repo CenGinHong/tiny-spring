@@ -4,6 +4,8 @@ package org.springframework.aop;
 import org.aopalliance.intercept.MethodInterceptor;
 
 /**
+ * 存储了代理方式，被代理的对象，方法拦截器，方法匹配器
+ *
  * @author chenJianhang
  * @version 1.0 2022/12/4 14:33
  */
