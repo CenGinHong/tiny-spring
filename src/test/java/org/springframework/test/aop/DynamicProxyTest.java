@@ -12,7 +12,7 @@ import org.springframework.aop.aspectj.AspectJExpressionPointcutAdvisor;
 import org.springframework.aop.framework.CglibAopProxy;
 import org.springframework.aop.framework.JdkDynamicAopProxy;
 import org.springframework.aop.framework.ProxyFactory;
-import org.springframework.aop.framework.adapter.MethodBeforeAdviceInterceptor;
+import org.springframework.aop.framework.adapter.MethodAdviceInterceptor;
 import org.springframework.test.common.WorldServiceBeforeAdvice;
 import org.springframework.test.common.WorldServiceInterceptor;
 import org.springframework.test.service.WorldService;
@@ -68,7 +68,8 @@ public class DynamicProxyTest {
     public void testBeforeAdvice() {
         //设置BeforeAdvice
         WorldServiceBeforeAdvice beforeAdvice = new WorldServiceBeforeAdvice();
-        MethodBeforeAdviceInterceptor methodInterceptor = new MethodBeforeAdviceInterceptor(beforeAdvice);
+        MethodAdviceInterceptor methodInterceptor = new MethodAdviceInterceptor();
+        methodInterceptor.setBeforeAdvice(beforeAdvice);
         advisedSupport.setMethodInterceptor(methodInterceptor);
 
         WorldService proxy = (WorldService) new ProxyFactory(advisedSupport).getProxy();
@@ -84,7 +85,8 @@ public class DynamicProxyTest {
         AspectJExpressionPointcutAdvisor advisor = new AspectJExpressionPointcutAdvisor();
         advisor.setExpression(expression);
         // MethodBeforeAdviceInterceptor 继承了advice
-        MethodBeforeAdviceInterceptor methodInterceptor = new MethodBeforeAdviceInterceptor(new WorldServiceBeforeAdvice());
+        MethodAdviceInterceptor methodInterceptor = new MethodAdviceInterceptor();
+        methodInterceptor.setBeforeAdvice(new WorldServiceBeforeAdvice());
         advisor.setAdvice(methodInterceptor);
 
         ClassFilter classFilter = advisor.getPointcut().getClassFilter();

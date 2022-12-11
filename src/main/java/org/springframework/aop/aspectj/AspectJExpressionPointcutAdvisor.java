@@ -10,13 +10,14 @@ import org.springframework.aop.PointcutAdvisor;
  */
 public class AspectJExpressionPointcutAdvisor implements PointcutAdvisor {
 
-
     private AspectJExpressionPointcut pointcut;
 
     private Advice advice;
 
+    private String expression;
+
     public void setExpression(String expression) {
-        pointcut = new AspectJExpressionPointcut(expression);
+        this.expression = expression;
     }
 
     public void setAdvice(Advice advice) {
@@ -30,6 +31,9 @@ public class AspectJExpressionPointcutAdvisor implements PointcutAdvisor {
 
     @Override
     public Pointcut getPointcut() {
+        if (pointcut == null) {
+            pointcut = new AspectJExpressionPointcut(expression);
+        }
         return pointcut;
     }
 }
