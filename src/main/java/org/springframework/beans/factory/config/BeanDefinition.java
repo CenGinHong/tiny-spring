@@ -2,6 +2,8 @@ package org.springframework.beans.factory.config;
 
 import org.springframework.beans.factory.PropertyValues;
 
+import java.util.Objects;
+
 /**
  * 用于定义bean信息的类，包含bean的class类型、构造参数、属性值等信息
  * 每个bean对应一个BeanDefinition的实例。简化BeanDefinition仅包含bean的class类型。
@@ -86,5 +88,18 @@ public class BeanDefinition {
 
     public void setDestroyMethodName(String destroyMethodName) {
         this.destroyMethodName = destroyMethodName;
+    }
+
+    @Override
+    public boolean equals(Object o) {
+        if (this == o) return true;
+        if (o == null || getClass() != o.getClass()) return false;
+        BeanDefinition that = (BeanDefinition) o;
+        return beanClass.equals(that.beanClass);
+    }
+
+    @Override
+    public int hashCode() {
+        return Objects.hash(beanClass);
     }
 }
