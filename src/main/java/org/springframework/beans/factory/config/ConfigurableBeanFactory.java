@@ -1,6 +1,7 @@
 package org.springframework.beans.factory.config;
 
 import org.springframework.beans.factory.HierarchicalBeanFactory;
+import org.springframework.util.StringValueResolver;
 
 /**
  * SingletonBeanRegistry 定义获取单例的方法
@@ -20,5 +21,18 @@ public interface ConfigurableBeanFactory extends HierarchicalBeanFactory, Single
      * 销毁单例bean
      */
     void destroySingletons();
+
+    /**
+     * 往beanFactory加入 valueResolver
+     *
+     * @param valueResolver valueResolver
+     */
+    void addEmbeddedValueResolver(StringValueResolver valueResolver);
+
+    /**
+     * @param value
+     * @return
+     */
+    String resolveEmbeddedValue(String value);
 
 }

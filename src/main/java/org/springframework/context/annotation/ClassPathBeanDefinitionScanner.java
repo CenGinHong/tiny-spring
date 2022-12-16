@@ -2,6 +2,7 @@ package org.springframework.context.annotation;
 
 import cn.hutool.core.util.StrUtil;
 import org.jetbrains.annotations.NotNull;
+import org.springframework.beans.factory.annotation.AutowiredAnnotationBeanPostProcessor;
 import org.springframework.beans.factory.config.BeanDefinition;
 import org.springframework.beans.factory.support.BeanDefinitionRegistry;
 import org.springframework.context.stereotype.Component;
@@ -13,6 +14,8 @@ import java.util.Set;
  * @version 1.0 2022/12/13 19:11
  */
 public class ClassPathBeanDefinitionScanner extends ClassPathScanningCandidateComponentProvider {
+
+    public static final String AUTOWIRED_ANNOTATION_PROCESSOR_BEAN_NAME = "org.springframework.context.annotation.internalAutowiredAnnotationProcessor";
 
     private final BeanDefinitionRegistry registry;
 
@@ -41,6 +44,9 @@ public class ClassPathBeanDefinitionScanner extends ClassPathScanningCandidateCo
                 registry.registerBeanDefinition(beanName, candidate);
             }
         }
+
+        // 注册该bean，扫描@Value和@Autowired注解
+        registry.registerBeanDefinition(AUTOWIRED_ANNOTATION_PROCESSOR_BEAN_NAME, new BeanDefinition(AutowiredAnnotationBeanPostProcessor.class));
     }
 
     /**

@@ -8,6 +8,7 @@ import org.springframework.beans.InitializingBean;
 import org.springframework.beans.factory.BeanFactoryAware;
 import org.springframework.beans.factory.DisposableBean;
 import org.springframework.beans.factory.PropertyValue;
+import org.springframework.beans.factory.PropertyValues;
 import org.springframework.beans.factory.config.*;
 
 import java.lang.reflect.Method;
@@ -39,6 +40,9 @@ public abstract class AbstractAutowireCapableBeanFactory extends AbstractBeanFac
         try {
             // 根据实例化策略构造对象，目前是获取了无参构造器
             bean = createBeanInstance(beanDefinition);
+            // 在设置bean属性之前，允许applyBeanPostProcessorsBeforeApplyingPropertyValues
+            // TODO 为什么不放在invokeBeanFactoryPostProcessors里做beanDef的替换，要创建完实例之后再去替换
+            applyBeanPostProcessorsBeforeApplyingPropertyValues(beanName, bean, beanDefinition);
             // 为bean填入参数
             applyPropertyValues(beanName, bean, beanDefinition);
             // 初始化该bean，调用前后修改的参数值
@@ -72,6 +76,28 @@ public abstract class AbstractAutowireCapableBeanFactory extends AbstractBeanFac
             bean = applyBeanPostProcessorsAfterInitialization(bean, beanName);
         }
         return bean;
+    }
+
+    /**
+     * 在设置bean属性之前，允许BeanPostProcess修改属性值,
+     * // TODO 为什么不放在invokeBeanFactoryPostProcessors(beanFactory);里做
+     *
+     * @param beanName       beanName
+     * @param bean           bean
+     * @param beanDefinition beanDefinition
+     */
+    protected void applyBeanPostProcessorsBeforeApplyingPropertyValues(String beanName, Object bean, BeanDefinition beanDefinition) {
+        for (BeanPostProcessor beanPostProcessor : getBeanPostProcessorList()) {
+            if (beanPostProcessor instanceof InstantiationAwareBeanPostProcessor) {
+                // 交给InstantiationAwareBeanPostProcessor进行属性替换
+                PropertyValues pvs = ((InstantiationAwareBeanPostProcessor) beanPostProcessor).postProcessPropertyValues(beanDefinition.getPropertyValues(), bean, beanName);
+                if (pvs != null) {
+                    for (PropertyValue propertyValue : pvs.getPropertyValues()) {
+                        beanDefinition.getPropertyValues().addPropertyValue(propertyValue);
+                    }
+                }
+            }
+        }
     }
 
     /**

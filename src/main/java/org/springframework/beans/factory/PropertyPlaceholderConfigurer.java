@@ -5,6 +5,7 @@ import org.springframework.beans.factory.config.BeanDefinition;
 import org.springframework.beans.factory.config.BeanFactoryPostProcessor;
 import org.springframework.core.io.DefaultResourceLoader;
 import org.springframework.core.io.Resource;
+import org.springframework.util.StringValueResolver;
 
 import java.io.IOException;
 import java.util.Properties;
@@ -28,6 +29,10 @@ public class PropertyPlaceholderConfigurer implements BeanFactoryPostProcessor {
 
         // 属性只替换占位符
         processProperties(beanFactory, properties);
+
+        // 在容器中加入字符解析器，供解析@Value注解使用
+        StringValueResolver valueResolver = new PlaceholderResolvingStringValueResolver(properties);
+        beanFactory.addEmbeddedValueResolver(valueResolver);
     }
 
     /**
@@ -62,25 +67,49 @@ public class PropertyPlaceholderConfigurer implements BeanFactoryPostProcessor {
             Object value = propertyValue.getValue();
             if (value instanceof String) {
                 // 仅支持简单的占位符格式
-                String strVal = (String) value;
-                StringBuilder sb = new StringBuilder(strVal);
-                int startIdx = strVal.indexOf(PLACEHOLDER_PREFIX);
-                int endIdx = strVal.indexOf(PLACEHOLDER_SUFFIX);
-                if (startIdx != -1 && endIdx != -1 && startIdx < endIdx) {
-                    // 把配置文件的key抽取
-                    String propKey = strVal.substring(startIdx + 2, endIdx);
-                    String propVal = properties.getProperty(propKey);
-                    // 把${xxx}在配置文件找到xxx=yy,替换
-                    sb.replace(startIdx, endIdx + 1, propVal);
-                    // 原来带有替代符的没有被删除，但是会被后续的覆盖掉
-                    propertyValues.addPropertyValue(new PropertyValue(propertyValue.getName(), sb.toString()));
-                }
+                value = resolvePlaceholder((String) value, properties);
+                // 将替换后的置回属性列表
+                propertyValues.addPropertyValue(new PropertyValue(propertyValue.getName(), value));
             }
         }
     }
 
+    /**
+     * 把占位符解析成配置文件中的实际值
+     *
+     * @param value      value
+     * @param properties 配置文件
+     * @return 解析后的值
+     */
+    private String resolvePlaceholder(String value, Properties properties) {
+        // TODO 仅支持一个占位符的格式
+        StringBuilder sb = new StringBuilder(value);
+        int startIndex = value.indexOf(PLACEHOLDER_PREFIX);
+        int endIndex = value.indexOf(PLACEHOLDER_SUFFIX);
+        if (startIndex != -1 && endIndex != -1 && startIndex < endIndex) {
+            String propKey = value.substring(startIndex + 2, endIndex);
+            String propVal = properties.getProperty(propKey);
+            sb.replace(startIndex, endIndex + 1, propVal);
+        }
+        return sb.toString();
+    }
+
     public void setLocation(String location) {
         this.location = location;
+    }
+
+    private class PlaceholderResolvingStringValueResolver implements StringValueResolver {
+
+        private final Properties properties;
+
+        public PlaceholderResolvingStringValueResolver(Properties properties) {
+            this.properties = properties;
+        }
+
+        @Override
+        public String resolverStringValue(String strVal) {
+            return PropertyPlaceholderConfigurer.this.resolvePlaceholder(strVal, this.properties);
+        }
     }
 
 }

@@ -5,6 +5,7 @@ import org.springframework.beans.factory.FactoryBean;
 import org.springframework.beans.factory.config.BeanDefinition;
 import org.springframework.beans.factory.config.BeanPostProcessor;
 import org.springframework.beans.factory.config.ConfigurableBeanFactory;
+import org.springframework.util.StringValueResolver;
 
 import java.util.ArrayList;
 import java.util.HashMap;
@@ -24,6 +25,8 @@ public abstract class AbstractBeanFactory extends DefaultSingletonBeanRegistry i
     private final List<BeanPostProcessor> beanPostProcessorList = new ArrayList<>();
 
     private final Map<String, Object> factoryBeanObjectCache = new HashMap<>();
+
+    private final List<StringValueResolver> embeddedValueResolvers = new ArrayList<>();
 
     @Override
     public Object getBean(String name) {
@@ -90,6 +93,18 @@ public abstract class AbstractBeanFactory extends DefaultSingletonBeanRegistry i
 
     public List<BeanPostProcessor> getBeanPostProcessorList() {
         return beanPostProcessorList;
+    }
+
+    public void addEmbeddedValueResolver(StringValueResolver valueResolver) {
+        this.embeddedValueResolvers.add(valueResolver);
+    }
+
+    public String resolveEmbeddedValue(String value) {
+        String result = value;
+        for (StringValueResolver resolver : this.embeddedValueResolvers) {
+            result = resolver.resolverStringValue(result);
+        }
+        return result;
     }
 
 }
