@@ -25,4 +25,12 @@ public interface BeanFactory {
      */
     <T> T getBean(String name, Class<T> requireType);
 
+    /**
+     * 根据类型查找bean
+     * @param requiredType bean类型
+     * @return bean
+     * @param <T> 类型
+     */
+    <T> T getBean(Class<T> requiredType);
+
 }
