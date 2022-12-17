@@ -9,7 +9,6 @@ import org.springframework.beans.BeansException;
 import org.springframework.beans.factory.BeanFactory;
 import org.springframework.beans.factory.BeanFactoryAware;
 import org.springframework.beans.factory.PropertyValues;
-import org.springframework.beans.factory.config.BeanDefinition;
 import org.springframework.beans.factory.config.InstantiationAwareBeanPostProcessor;
 import org.springframework.beans.factory.support.DefaultListableBeanFactory;
 
@@ -47,15 +46,18 @@ public class DefaultAdvisorAutoProxyCreator implements InstantiationAwareBeanPos
         return bean;
     }
 
+    /**
+     * 切面织入形成代理类
+     *
+     * @param bean     bean实例
+     * @param beanName beanName
+     * @return bean
+     * @throws BeansException BeansException
+     */
     @Override
     public Object postProcessAfterInitialization(Object bean, String beanName) throws BeansException {
-        return bean;
-    }
-
-    @Override
-    public Object postProcessBeforeInstantiation(Class<?> beanClass, String beanName) throws BeansException {
         // 避免死循环
-        if (isInfrastructureClass(beanClass)) {
+        if (isInfrastructureClass(bean.getClass())) {
             return null;
         }
         // 从beanFactory注入AspectJExpressionPointcutAdvisor并获取
@@ -65,11 +67,8 @@ public class DefaultAdvisorAutoProxyCreator implements InstantiationAwareBeanPos
             for (AspectJExpressionPointcutAdvisor advisor : advisors) {
                 ClassFilter classFilter = advisor.getPointcut().getClassFilter();
                 // 和这个类匹配
-                if (classFilter.matches(beanClass)) {
+                if (classFilter.matches(bean.getClass())) {
                     AdvisedSupport adviceSupport = new AdvisedSupport();
-                    BeanDefinition beanDefinition = beanFactory.getBeanDefinition(beanName);
-                    // 反射构造对象
-                    Object bean = beanFactory.getInstantiationStrategy().instantiate(beanDefinition);
                     TargetSource targetSource = new TargetSource(bean);
                     adviceSupport.setTargetSource(targetSource);
                     // MethodInterceptor 本身是advice的子类
@@ -81,7 +80,17 @@ public class DefaultAdvisorAutoProxyCreator implements InstantiationAwareBeanPos
         } catch (Exception ex) {
             throw new BeansException("Error create proxy bean for: " + beanName, ex);
         }
+        return bean;
+    }
+
+    @Override
+    public Object postProcessBeforeInstantiation(Class<?> beanClass, String beanName) throws BeansException {
         return null;
+    }
+
+    @Override
+    public boolean postProcessAfterInstantiation(Object bean, String beanName) throws BeansException {
+        return true;
     }
 
     @Override

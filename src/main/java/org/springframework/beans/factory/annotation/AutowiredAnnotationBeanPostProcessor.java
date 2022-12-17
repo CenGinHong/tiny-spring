@@ -41,6 +41,11 @@ public class AutowiredAnnotationBeanPostProcessor implements InstantiationAwareB
     }
 
     @Override
+    public boolean postProcessAfterInstantiation(Object bean, String beanName) throws BeansException {
+        return true;
+    }
+
+    @Override
     public PropertyValues postProcessPropertyValues(PropertyValues pvs, Object bean, String beanName) throws BeansException {
         // 处理@Value注解
         Class<?> clazz = bean.getClass();
@@ -74,7 +79,7 @@ public class AutowiredAnnotationBeanPostProcessor implements InstantiationAwareB
                     // 只用类型找
                     dependentBean = beanFactory.getBean(fieldType);
                 }
-                BeanUtil.setFieldValue(bean,field.getName(),dependentBean);
+                BeanUtil.setFieldValue(bean, field.getName(), dependentBean);
             }
         }
         return pvs;

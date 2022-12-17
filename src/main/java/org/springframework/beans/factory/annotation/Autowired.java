@@ -10,6 +10,6 @@ import java.lang.annotation.Target;
  * @version 1.0 2022/12/16 17:08
  */
 @Retention(RetentionPolicy.RUNTIME)
-@Target({ElementType.CONSTRUCTOR,ElementType.FIELD,ElementType.METHOD})
+@Target({ElementType.CONSTRUCTOR, ElementType.FIELD, ElementType.METHOD})
 public @interface Autowired {
 }

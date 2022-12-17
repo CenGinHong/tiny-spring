@@ -38,15 +38,20 @@ public abstract class AbstractAutowireCapableBeanFactory extends AbstractBeanFac
     protected Object doCreateBean(String beanName, BeanDefinition beanDefinition) {
         Object bean;
         try {
-            // 根据实例化策略构造对象，目前是获取了无参构造器
+            // 根据实例化策略构造对象
             bean = createBeanInstance(beanDefinition);
+            boolean continueWithPropertyPopulation = applyBeanPostProcessorsAfterInstantiation(beanName, bean);
+            if (!continueWithPropertyPopulation) {
+                return bean;
+            }
             // 在设置bean属性之前，允许applyBeanPostProcessorsBeforeApplyingPropertyValues
             // TODO 为什么不放在invokeBeanFactoryPostProcessors里做beanDef的替换，要创建完实例之后再去替换
+            // 目前推猜，写在xml的bean的${}用这里beanFactoryPostProcess配置，用@Value的直接beanUtil.setField
             applyBeanPostProcessorsBeforeApplyingPropertyValues(beanName, bean, beanDefinition);
             // 为bean填入参数
             applyPropertyValues(beanName, bean, beanDefinition);
             // 初始化该bean，调用前后修改的参数值
-            initializeBean(beanName, bean, beanDefinition);
+            bean = initializeBean(beanName, bean, beanDefinition);
         } catch (Exception e) {
             throw new BeansException("Instantiation of bean failed", e);
         }
@@ -57,6 +62,19 @@ public abstract class AbstractAutowireCapableBeanFactory extends AbstractBeanFac
             addSingleton(beanName, bean);
         }
         return bean;
+    }
+
+    private boolean applyBeanPostProcessorsAfterInstantiation(String beanName, Object bean) {
+        boolean continueWithPropertyPopulation = true;
+        for (BeanPostProcessor beanPostProcessor : getBeanPostProcessorList()) {
+            if (beanPostProcessor instanceof InstantiationAwareBeanPostProcessor) {
+                if (!((InstantiationAwareBeanPostProcessor) beanPostProcessor).postProcessAfterInstantiation(bean, beanName)) {
+                    continueWithPropertyPopulation = false;
+                    break;
+                }
+            }
+        }
+        return continueWithPropertyPopulation;
     }
 
     protected Object createBeanInstance(BeanDefinition beanDefinition) {
@@ -72,6 +90,7 @@ public abstract class AbstractAutowireCapableBeanFactory extends AbstractBeanFac
      */
     protected Object resolveBeforeInstantiation(String beanName, BeanDefinition beanDefinition) {
         Object bean = applyBeanPostProcessorsBeforeInstantiation(beanDefinition.getBeanClass(), beanName);
+        // 如果已经构成实例化，就Initialization
         if (bean != null) {
             bean = applyBeanPostProcessorsAfterInitialization(bean, beanName);
         }
@@ -101,7 +120,7 @@ public abstract class AbstractAutowireCapableBeanFactory extends AbstractBeanFac
     }
 
     /**
-     * 返回一个切面代理对象
+     * 初始化之前实现，返回null将会形成短路
      *
      * @param beanClass beanClass
      * @param beanName  beanName
@@ -111,7 +130,7 @@ public abstract class AbstractAutowireCapableBeanFactory extends AbstractBeanFac
         for (BeanPostProcessor beanPostProcessor : getBeanPostProcessorList()) {
             if (beanPostProcessor instanceof InstantiationAwareBeanPostProcessor) {
                 // 调用DefaultAdvisorAutoProxyCreator，这个是在xml注入的bean
-                // 这个bean的方法从bean里寻找切面类，并创建代理对象
+                // 如果这里返回null将会形成短路
                 Object result = ((InstantiationAwareBeanPostProcessor) beanPostProcessor)
                         .postProcessBeforeInstantiation(beanClass, beanName);
                 if (result != null) {
@@ -159,7 +178,7 @@ public abstract class AbstractAutowireCapableBeanFactory extends AbstractBeanFac
         } catch (Exception e) {
             throw new BeansException("Invocation of init method of bean [" + beanName + "] failed", e);
         }
-
+        // 代理类可能在这里生成
         wrappedBean = applyBeanPostProcessorsAfterInitialization(bean, beanName);
         return wrappedBean;
     }
@@ -199,6 +218,14 @@ public abstract class AbstractAutowireCapableBeanFactory extends AbstractBeanFac
         return res;
     }
 
+    /**
+     * 执行初始化方法，先执行afterPropertiesSet后执行xml的init-method
+     *
+     * @param beanName       beanName
+     * @param bean           bean
+     * @param beanDefinition beanDefinition
+     * @throws Exception Exception
+     */
     protected void invokeInitMethods(String beanName, Object bean, BeanDefinition beanDefinition) throws Exception {
         if (bean instanceof InitializingBean) {
             ((InitializingBean) bean).afterPropertiesSet();

@@ -30,12 +30,12 @@ public class MethodAdviceInterceptor implements MethodInterceptor {
         return ret;
     }
 
-    public void setBeforeAdvice(MethodBeforeAdvice beforeAdvice) {
-        this.beforeAdvice = beforeAdvice;
-    }
-
     public MethodBeforeAdvice getBeforeAdvice() {
         return beforeAdvice;
+    }
+
+    public void setBeforeAdvice(MethodBeforeAdvice beforeAdvice) {
+        this.beforeAdvice = beforeAdvice;
     }
 
     public MethodAfterReturningAdvice getAfterReturningAdvice() {

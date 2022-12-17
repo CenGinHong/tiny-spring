@@ -27,9 +27,10 @@ public interface BeanFactory {
 
     /**
      * 根据类型查找bean
+     *
      * @param requiredType bean类型
+     * @param <T>          类型
      * @return bean
-     * @param <T> 类型
      */
     <T> T getBean(Class<T> requiredType);
 
