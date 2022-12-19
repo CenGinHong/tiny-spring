@@ -5,6 +5,7 @@ import org.springframework.beans.factory.FactoryBean;
 import org.springframework.beans.factory.config.BeanDefinition;
 import org.springframework.beans.factory.config.BeanPostProcessor;
 import org.springframework.beans.factory.config.ConfigurableBeanFactory;
+import org.springframework.core.convert.ConversionService;
 import org.springframework.util.StringValueResolver;
 
 import java.util.ArrayList;
@@ -28,6 +29,8 @@ public abstract class AbstractBeanFactory extends DefaultSingletonBeanRegistry i
 
     private final List<StringValueResolver> embeddedValueResolvers = new ArrayList<>();
 
+    private ConversionService conversionService;
+
     @Override
     public Object getBean(String name) {
         // 从DefaultSingletonBeanRegistry 的map拿
@@ -37,7 +40,6 @@ public abstract class AbstractBeanFactory extends DefaultSingletonBeanRegistry i
             BeanDefinition beanDefinition = getBeanDefinition(name);
             // 由实现此抽象类的其他类做相应实现
             sharedInstance = createBean(name, beanDefinition);
-
         }
         return getObjectForBeanInstance(sharedInstance, name);
     }
@@ -72,7 +74,6 @@ public abstract class AbstractBeanFactory extends DefaultSingletonBeanRegistry i
         return object;
     }
 
-
     @SuppressWarnings("unchecked")
     @Override
     public <T> T getBean(String name, Class<T> requireType) {
@@ -83,6 +84,8 @@ public abstract class AbstractBeanFactory extends DefaultSingletonBeanRegistry i
     protected abstract Object createBean(String beanName, BeanDefinition beanDefinition) throws BeansException;
 
     protected abstract BeanDefinition getBeanDefinition(String beanName) throws BeansException;
+
+    protected abstract boolean containsBeanDefinition(String beanName);
 
     @Override
     public void addBeanPostProcessor(BeanPostProcessor beanPostProcessor) {
@@ -105,6 +108,21 @@ public abstract class AbstractBeanFactory extends DefaultSingletonBeanRegistry i
             result = resolver.resolverStringValue(result);
         }
         return result;
+    }
+
+    @Override
+    public boolean containsBean(String name) {
+        return containsBeanDefinition(name);
+    }
+
+    @Override
+    public ConversionService getConversionService() {
+        return conversionService;
+    }
+
+    @Override
+    public void setConversionService(ConversionService conversionService) {
+        this.conversionService = conversionService;
     }
 
 }

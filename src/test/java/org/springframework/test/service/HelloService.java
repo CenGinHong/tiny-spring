@@ -21,9 +21,8 @@ public class HelloService implements ApplicationContextAware, BeanFactoryAware {
         return "hello";
     }
 
-    @Override
-    public void setBeanFactory(BeanFactory beanFactory) throws BeansException {
-        this.beanFactory = beanFactory;
+    public ApplicationContext getApplicationContext() {
+        return applicationContext;
     }
 
     @Override
@@ -31,12 +30,13 @@ public class HelloService implements ApplicationContextAware, BeanFactoryAware {
         this.applicationContext = applicationContext;
     }
 
-    public ApplicationContext getApplicationContext() {
-        return applicationContext;
-    }
-
     public BeanFactory getBeanFactory() {
         return beanFactory;
+    }
+
+    @Override
+    public void setBeanFactory(BeanFactory beanFactory) throws BeansException {
+        this.beanFactory = beanFactory;
     }
 
 }

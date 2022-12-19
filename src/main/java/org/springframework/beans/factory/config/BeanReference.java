@@ -10,7 +10,6 @@ public class BeanReference {
 
     private final String beanName;
 
-
     public BeanReference(String beanName) {
         this.beanName = beanName;
     }

@@ -1,6 +1,7 @@
 package org.springframework.beans.factory.config;
 
 import org.springframework.beans.factory.HierarchicalBeanFactory;
+import org.springframework.core.convert.ConversionService;
 import org.springframework.util.StringValueResolver;
 
 /**
@@ -30,9 +31,15 @@ public interface ConfigurableBeanFactory extends HierarchicalBeanFactory, Single
     void addEmbeddedValueResolver(StringValueResolver valueResolver);
 
     /**
-     * @param value
-     * @return
+     * 解析可替换的配置值
+     *
+     * @param value 配置值
+     * @return 配置值
      */
     String resolveEmbeddedValue(String value);
+
+    ConversionService getConversionService();
+
+    void setConversionService(ConversionService conversionService);
 
 }

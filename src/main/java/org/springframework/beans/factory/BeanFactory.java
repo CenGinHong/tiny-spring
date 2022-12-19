@@ -34,4 +34,6 @@ public interface BeanFactory {
      */
     <T> T getBean(Class<T> requiredType);
 
+    boolean containsBean(String name);
+
 }
