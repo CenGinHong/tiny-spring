@@ -13,6 +13,8 @@ import org.springframework.beans.factory.config.InstantiationAwareBeanPostProces
 import org.springframework.beans.factory.support.DefaultListableBeanFactory;
 
 import java.util.Collection;
+import java.util.HashSet;
+import java.util.Set;
 
 /**
  * @author chenJianhang
@@ -20,6 +22,7 @@ import java.util.Collection;
  */
 public class DefaultAdvisorAutoProxyCreator implements InstantiationAwareBeanPostProcessor, BeanFactoryAware {
 
+    private final Set<Object> earlyProxyReferenceSet = new HashSet<>();
     private DefaultListableBeanFactory beanFactory;
 
     /**
@@ -56,9 +59,24 @@ public class DefaultAdvisorAutoProxyCreator implements InstantiationAwareBeanPos
      */
     @Override
     public Object postProcessAfterInitialization(Object bean, String beanName) throws BeansException {
+        // 如果缓存里没有
+        if (!earlyProxyReferenceSet.contains(beanName)) {
+            return wrapIfNecessary(bean, beanName);
+        }
+        return bean;
+    }
+
+    public Object getEarlyBeanReference(Object bean, String beanName) throws BeansException {
+        // 实例化后bean放入，这里是原始的bean
+        earlyProxyReferenceSet.add(bean);
+        // 这里返回的是动态代理的bean
+        return wrapIfNecessary(bean, beanName);
+    }
+
+    protected Object wrapIfNecessary(Object bean, String beanName) {
         // 避免死循环
         if (isInfrastructureClass(bean.getClass())) {
-            return null;
+            return bean;
         }
         // 从beanFactory注入AspectJExpressionPointcutAdvisor并获取
         // AspectJExpressionPointcutAdvisor就是那些切面类，封装了切面匹配和被切的要织入的前后置advice
@@ -82,6 +100,7 @@ public class DefaultAdvisorAutoProxyCreator implements InstantiationAwareBeanPos
         }
         return bean;
     }
+
 
     @Override
     public Object postProcessBeforeInstantiation(Class<?> beanClass, String beanName) throws BeansException {

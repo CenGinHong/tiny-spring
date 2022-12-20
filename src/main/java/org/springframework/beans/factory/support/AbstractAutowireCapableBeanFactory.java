@@ -28,7 +28,6 @@ public abstract class AbstractAutowireCapableBeanFactory extends AbstractBeanFac
 
     @Override
     protected Object createBean(String beanName, BeanDefinition beanDefinition) throws BeansException {
-        // 如果bean需要代理，则返回代理对象
         // 代理bean对象不是代理的，也不会执行initializeBean那些方法
         Object bean = resolveBeforeInstantiation(beanName, beanDefinition);
         if (bean != null) {
@@ -42,6 +41,13 @@ public abstract class AbstractAutowireCapableBeanFactory extends AbstractBeanFac
         try {
             // 根据实例化策略构造对象
             bean = createBeanInstance(beanDefinition);
+            // 为解决循环依赖问题，将实例化后的bean放进缓存中提前暴露
+            if (beanDefinition.isSingleton()) {
+                // 这里的bean只是初始化了
+                Object finalBean = bean;
+                // 往三级缓存添加早期引用的工厂，此时bean并没有被正式放入三级缓存，当被调用是才会
+                addSingletonFactory(beanName, () -> getEarlyBeanReference(beanName, beanDefinition, finalBean));
+            }
             boolean continueWithPropertyPopulation = applyBeanPostProcessorsAfterInstantiation(beanName, bean);
             if (!continueWithPropertyPopulation) {
                 return bean;
@@ -61,9 +67,35 @@ public abstract class AbstractAutowireCapableBeanFactory extends AbstractBeanFac
         registerDisposableBeanIfNecessary(beanName, bean, beanDefinition);
         // 将bean对象放入容器，这里放入的是DefaultSingletonBeanRegistry的map
         if (beanDefinition.isSingleton()) {
-            addSingleton(beanName, bean);
+            // 如果有实例对象，此处获取实例对象
+            // 该步是整理一二三级缓存的内容，顺级获取
+            Object exposedObject = getSingleton(beanName);
+            // 最后统一放到一级缓存
+            addSingleton(beanName, exposedObject);
         }
         return bean;
+    }
+
+    /**
+     * 获取bean的早期引用，包含切面类
+     *
+     * @param beanName       beanName
+     * @param beanDefinition beanDefinition
+     * @param bean           bean
+     * @return bean
+     */
+    protected Object getEarlyBeanReference(String beanName, BeanDefinition beanDefinition, Object bean) {
+        Object exposedObject = bean;
+        for (BeanPostProcessor bp : getBeanPostProcessorList()) {
+            if (bp instanceof InstantiationAwareBeanPostProcessor) {
+                // 这里可能会为bean返回切面类
+                exposedObject = ((InstantiationAwareBeanPostProcessor) bp).getEarlyBeanReference(exposedObject, beanName);
+                if (exposedObject == null) {
+                    return null;
+                }
+            }
+        }
+        return exposedObject;
     }
 
     private boolean applyBeanPostProcessorsAfterInstantiation(String beanName, Object bean) {
