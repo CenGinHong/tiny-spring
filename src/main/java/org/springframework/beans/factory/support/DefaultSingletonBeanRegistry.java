@@ -37,11 +37,13 @@ public class DefaultSingletonBeanRegistry implements SingletonBeanRegistry {
      * 一级缓存
      */
     private final Map<String, Object> singletonObjectMap = new HashMap<>();
+
+    private final Map<String, DisposableBean> disposableBeanMap = new HashMap<>();
+
     /**
      * 三级缓存
      */
     private final Map<String, ObjectFactory<?>> singletonFactoryMap = new HashMap<>();
-    private final Map<String, DisposableBean> disposableBeanMap = new HashMap<>();
     /**
      * 二级缓存，存放为完全实例化完毕的bean的引用
      * 一般只有处于循环引用状态的Bean才会被保存在该缓存中。保存在该缓存中的Bean所实现Aware子接口的方法还未回调，
@@ -50,7 +52,7 @@ public class DefaultSingletonBeanRegistry implements SingletonBeanRegistry {
      * 普通Bean被增强(JDK动态代理或CGLIB)的时机是在AbstractAutoProxyCreator实现的BeanPostProcessor的postProcessorAfterInitialization方法中，
      * 而处于循环引用状态的Bean被增强的时机是在AbstractAutoProxyCreator实现的SmartInstantiationAwareBeanPostProcessor的getEarlyBeanReference方法中。
      */
-    protected Map<String, Object> earlySingletonObjects = new HashMap<>();
+    protected Map<String, Object> earlySingletonObjectMap = new HashMap<>();
 
     @Override
     public Object getSingleton(String beanName) {
@@ -58,14 +60,14 @@ public class DefaultSingletonBeanRegistry implements SingletonBeanRegistry {
         Object singletonObject = singletonObjectMap.get(beanName);
         if (singletonObject == null) {
             // 从二级缓存取
-            singletonObject = earlySingletonObjects.get(beanName);
+            singletonObject = earlySingletonObjectMap.get(beanName);
             if (singletonObject == null) {
                 ObjectFactory<?> singletonFactory = singletonFactoryMap.get(beanName);
                 if (singletonFactory != null) {
                     // 获取工厂并创建bean，此时获取的可能是切面类
                     singletonObject = singletonFactory.getObject();
                     // bean被创造出来后，就从三级缓存放进二级缓存
-                    earlySingletonObjects.put(beanName, singletonObject);
+                    earlySingletonObjectMap.put(beanName, singletonObject);
                     singletonFactoryMap.remove(beanName);
                 }
             }
@@ -76,7 +78,7 @@ public class DefaultSingletonBeanRegistry implements SingletonBeanRegistry {
     @Override
     public void addSingleton(String beanName, Object singletonObject) {
         singletonObjectMap.put(beanName, singletonObject);
-        earlySingletonObjects.remove(beanName);
+        earlySingletonObjectMap.remove(beanName);
         singletonFactoryMap.remove(beanName);
     }
 
